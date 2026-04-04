@@ -1,33 +1,39 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-// -------- LOGIN PAGE --------
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Viewer");
+  const [role, setRole] = useState("viewer");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-        role,
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/loginUser",
+        { email, password, role }
+      );
 
-      const { token, user } = res.data;
+      const { success, data, message } = res.data;
+
+      if (!success) {
+        alert(message);
+        return;
+      }
+
+      // Extract data
+      const { token, role: userRole, email: userEmail } = data;
 
       // Store in localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("role", user.role);
-      localStorage.setItem("name", user.name);
+      localStorage.setItem("role", userRole);
+      localStorage.setItem("email", userEmail);
 
-      // Redirect based on role
-      if (user.role === "Viewer") navigate("/viewer");
-      else if (user.role === "Analyst") navigate("/analyst");
-      else if (user.role === "Admin") navigate("/admin");
+      // Redirect based on role (lowercase safe)
+      if (userRole === "viewer") navigate("/viewer");
+      else if (userRole === "analyst") navigate("/analyst");
+      else if (userRole === "admin") navigate("/admin");
 
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
@@ -35,18 +41,48 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: 30 }}>
-      <h2>Login</h2>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} /><br/><br/>
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} /><br/><br/>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      
+      <div className="bg-gray-800 text-white p-8 rounded-2xl shadow-2xl w-96">
+        
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-400">
+          Finance Dashboard Login
+        </h2>
 
-      <select onChange={(e) => setRole(e.target.value)}>
-        <option value="Viewer">Viewer</option>
-        <option value="Analyst">Analyst</option>
-        <option value="Admin">Admin</option>
-      </select><br/><br/>
+        {/* Email */}
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full p-3 mb-4 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <button onClick={handleLogin}>Login</button>
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full p-3 mb-4 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        {/* Role */}
+        <select
+          className="w-full p-3 mb-6 rounded-lg bg-gray-700 border border-gray-600"
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="viewer">Viewer</option>
+          <option value="analyst">Analyst</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        {/* Button */}
+        <button
+          onClick={handleLogin}
+          className="w-full bg-green-500 hover:bg-green-600 transition duration-300 p-3 rounded-lg font-semibold"
+        >
+          Login
+        </button>
+      </div>
     </div>
   );
 }

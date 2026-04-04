@@ -1,9 +1,15 @@
 import jwt from "jsonwebtoken";
 
-const generateToken = (id) => {
+const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key";
+
+const generateToken = (user) => {
   return jwt.sign(
-    { id },
-    process.env.JWT_SECRET,
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    },
+    JWT_SECRET,
     { expiresIn: "7d" }
   );
 };

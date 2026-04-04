@@ -2,6 +2,8 @@ import User from "../models/user-model.js";
 import jwt from "jsonwebtoken";
 import generateToken from "../utils/generateToken.js";
 
+const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key";
+
 export const loginUser = async (req, res) => {
     try {
         const { email, password, role } = req.body;
@@ -74,7 +76,7 @@ export const verifyToken = async (req, res) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
 
         const user = await User.findById(decoded.id);
         if (!user || !user.isActive) {
