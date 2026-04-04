@@ -1,0 +1,97 @@
+import User from "../models/user-model.js";
+import jwt from "jsonwebtoken";
+import generateToken from "../utils/generateToken.js";
+
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password, role } = req.body;
+
+        if (!email || !password || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "Email, password and role are required",
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials",
+            });
+        }
+
+        if (user.role !== role) {
+            return res.status(403).json({
+                success: false,
+                message: "Role mismatch",
+            });
+        }
+
+        if (password !== user.password) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials",
+            });
+        }
+
+        if (!user.isActive) {
+            return res.status(403).json({
+                success: false,
+                message: "User is inactive",
+            });
+        }
+
+        const token = generateToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+            data: {
+                email: user.email,
+                role: user.role,
+                token,
+            },
+        });
+    } catch (error) {
+        console.error("Login Error:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+export const verifyToken = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+
+        if (!token) {
+            return res.status(401).json({
+                valid: false,
+                message: "No token provided",
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.id);
+        if (!user || !user.isActive) {
+            return res
+                .status(403)
+                .json({ message: "User is inactive or does not exist" });
+        }
+
+        return res.status(200).json({
+            valid: true,
+            email: decoded.email,
+            role: decoded.role,
+        });
+    } catch (error) {
+        return res.status(401).json({
+            valid: false,
+            message: "Invalid or expired token",
+        });
+    }
+};
