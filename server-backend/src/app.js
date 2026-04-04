@@ -4,9 +4,8 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
-
-// import transactionRoutes from "./routes/transaction-routes.js";
-// import dashboardRoutes from "./routes/dashboard-routes.js";
+import transactionRoutes from "./routes/transaction-routes.js";
+import dashboardRoutes from "./routes/dashboard-routes.js";
 
 dotenv.config();
 
@@ -17,8 +16,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-// app.use("/api/transactions", transactionRoutes);
-// app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/transactions", transactionRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 import homePage from "./views/home-view.js";
 app.get(["/","/api"], (req, res) => {

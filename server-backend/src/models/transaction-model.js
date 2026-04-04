@@ -2,16 +2,26 @@ import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema(
     {
-        amount: Number,
+        amount: {
+            type: Number,
+            required: true,
+        },
 
         type: {
             type: String,
             enum: ["income", "expense"],
+            required: true,
         },
 
-        category: String,
+        category: {
+            type: String,
+            required: true,
+        },
 
-        date: Date,
+        date: {
+            type: Date,
+            required: true,
+        },
 
         notes: String,
     },
