@@ -17,4 +17,9 @@ app.use(express.json());
 // app.use("/api/transactions", transactionRoutes);
 // app.use("/api/dashboard", dashboardRoutes);
 
+import homePage from "./views/home-view.js";
+app.get(["/","/api"], (req, res) => {
+  res.send(homePage());
+});
+
 export default app;
