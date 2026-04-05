@@ -90,14 +90,14 @@ export const verifyToken = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                email: decoded.email,
-                role: decoded.role,
-                name: decoded.name,
+                email: user.email,
+                role: user.role,
+                name: user.name,
             },
         });
     } catch (error) {
         return res.status(401).json({
-            valid: false,
+            success: false,
             message: "Invalid or expired token",
         });
     }
