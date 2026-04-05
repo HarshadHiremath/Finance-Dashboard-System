@@ -1,21 +1,12 @@
-import mongoose from "mongoose"; 
-let isConnected = false;
+import mongoose from "mongoose";
 
 const connectDB = async () => {
-  if (isConnected) {
-    console.log("Using existing DB connection");
-    return;
-  }
-
-  const mongoUri = "mongodb://localhost:27017/finance-dashboard";
-
   try {
-    const conn = await mongoose.connect(mongoUri);
-    isConnected = conn.connections[0].readyState;
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB Connected");
   } catch (error) {
-    console.error("DB Error:", error.message);
-    throw error;
+    console.error(error);
+    process.exit(1);
   }
 };
 
