@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import dns from "dns";
+dns.setServers(["1.1.1.1","8.8.8.8"]);
 dotenv.config();
 
 import connectDB from "./config/db.js";
@@ -34,14 +36,6 @@ app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "Route not found",
-  });
-});
-
-app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
-  res.status(500).json({
-    success: false,
-    message: "Internal server error",
   });
 });
 
