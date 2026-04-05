@@ -1,11 +1,18 @@
+import mongoose from "mongoose";
 import User from "../models/user-model.js";
 import jwt from "jsonwebtoken";
 import generateToken from "../utils/generateToken.js";
+import connectDB from "../config/db.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key";
 
 export const loginUser = async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            console.log("MongoDB connection state before login:", mongoose.connection.readyState);
+            await connectDB();
+        }
+
         const { email, password, role } = req.body;
 
         if (!email || !password || !role) {
@@ -57,7 +64,7 @@ export const loginUser = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Login Error:", error.message);
+        console.error("Login Error:", error);
         return res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -67,6 +74,11 @@ export const loginUser = async (req, res) => {
 
 export const verifyToken = async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            console.log("MongoDB connection state before verifyToken:", mongoose.connection.readyState);
+            await connectDB();
+        }
+
         const token = req.headers.authorization?.split(" ")[1];
 
         if (!token) {
