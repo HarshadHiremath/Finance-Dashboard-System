@@ -24,9 +24,7 @@ export const loginUser = async (req, res) => {
             });
         }
 
-        const isMatch = await user.comparePassword(password);
-
-        if (!isMatch) {
+        if (password!==user.password) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid credentials",
@@ -66,6 +64,7 @@ export const loginUser = async (req, res) => {
         });
     }
 };
+
 
 export const verifyToken = async (req, res) => {
     try {
