@@ -8,10 +8,10 @@ export const loginUser = async (req, res) => {
     try {
         const { email, password, role } = req.body;
 
-        if (!email || !password || !role) {
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email, password and role are required",
+                message: "Email and password are required",
             });
         }
 
@@ -24,17 +24,19 @@ export const loginUser = async (req, res) => {
             });
         }
 
-        if (user.role !== role) {
-            return res.status(403).json({
-                success: false,
-                message: "Role mismatch",
-            });
-        }
+        const isMatch = await user.comparePassword(password);
 
-        if (password !== user.password) {
+        if (!isMatch) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid credentials",
+            });
+        }
+
+        if (role && user.role !== role) {
+            return res.status(403).json({
+                success: false,
+                message: "Role mismatch",
             });
         }
 
