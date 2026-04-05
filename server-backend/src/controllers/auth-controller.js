@@ -53,6 +53,7 @@ export const loginUser = async (req, res) => {
             data: {
                 email: user.email,
                 role: user.role,
+                name: user.name,
                 token,
             },
         });
@@ -91,6 +92,7 @@ export const verifyToken = async (req, res) => {
             data: {
                 email: decoded.email,
                 role: decoded.role,
+                name: decoded.name,
             },
         });
     } catch (error) {

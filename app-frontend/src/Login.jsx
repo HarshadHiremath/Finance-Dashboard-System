@@ -39,6 +39,7 @@ export default function Login() {
                 if (success) {
                     localStorage.setItem("role", data.role);
                     localStorage.setItem("email", data.email);
+                    localStorage.setItem("user", data.name);
                 } else {
                     throw new Error();
                 }
@@ -70,11 +71,12 @@ export default function Login() {
                 return;
             }
 
-            const { token, role: userRole, email: userEmail } = data;
+            const { token, role: userRole, email: userEmail, name:userName } = data;
 
             localStorage.setItem("token", token);
             localStorage.setItem("role", userRole);
             localStorage.setItem("email", userEmail);
+            localStorage.setItem("user", userName);
             window.location.href = "/";
 
         } catch (err) {

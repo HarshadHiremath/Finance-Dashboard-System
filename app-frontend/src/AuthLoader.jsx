@@ -33,11 +33,9 @@ export default function AuthLoader() {
                 const { success, data } = res.data;
 
                 if (success) {
-                    // ✅ Store fresh data
-                    localStorage.setItem("token", data.token);
                     localStorage.setItem("role", data.role);
                     localStorage.setItem("email", data.email);
-
+                    localStorage.setItem("user", data.name);
                     setRole(data.role);
                     setStatus("valid");
                 } else {
@@ -68,9 +66,10 @@ export default function AuthLoader() {
 
     /* -------- VALID (NO REDIRECT) -------- */
     if (status === "valid") {
-        if (role === "viewer") return <Viewer />;
-        if (role === "analyst") return <Analyst />;
-        if (role === "admin") return <Admin />;
+        if (role === "Viewer") return <Viewer />;
+        if (role === "Analyst") return <Analyst />;
+        if (role === "Admin") return <Admin />;
+        return <div>Error: Unknown user role</div>;
     }
 
     /* -------- INVALID -------- */
