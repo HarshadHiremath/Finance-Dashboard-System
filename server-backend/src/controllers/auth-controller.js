@@ -87,9 +87,11 @@ export const verifyToken = async (req, res) => {
         }
 
         return res.status(200).json({
-            valid: true,
-            email: decoded.email,
-            role: decoded.role,
+            success: true,
+            data: {
+                email: decoded.email,
+                role: decoded.role,
+            },
         });
     } catch (error) {
         return res.status(401).json({
