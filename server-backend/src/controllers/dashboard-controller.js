@@ -1,79 +1,84 @@
 import Transaction from "../models/transaction-model.js";
 
 export const getDashboardSummary = async (req, res) => {
-    try {
-        
-        const totalIncome = await Transaction.aggregate([
-            { $match: { type: "income" } },
-            { $group: { _id: null, total: { $sum: "$amount" } } },
-        ]);
+  try {
+    // 📥 Get all transactions
+    const transactions = await Transaction.find();
 
-        const totalExpense = await Transaction.aggregate([
-            { $match: { type: "expense" } },
-            { $group: { _id: null, total: { $sum: "$amount" } } },
-        ]);
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let categoryTotals = {};
+    let monthlyTrends = {};
 
-        const income = totalIncome[0]?.total || 0;
-        const expense = totalExpense[0]?.total || 0;
-        const netBalance = income - expense;
+    // 🔄 Loop through all transactions
+    transactions.forEach((t) => {
+      // 💰 Income / Expense
+      if (t.type === "income") {
+        totalIncome += t.amount;
+      } else if (t.type === "expense") {
+        totalExpense += t.amount;
+      }
 
-        const categoryTotals = await Transaction.aggregate([
-            {
-                $group: {
-                    _id: "$category",
-                    total: { $sum: "$amount" },
-                },
-            },
-            { $sort: { total: -1 } },
-        ]);
+      // 📂 Category totals
+      if (!categoryTotals[t.category]) {
+        categoryTotals[t.category] = 0;
+      }
+      categoryTotals[t.category] += t.amount;
 
-        const recentTransactions = await Transaction.find()
-            .sort({ createdAt: -1 })
-            .limit(5);
+      // 📅 Monthly trends
+      const date = new Date(t.date);
+      const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
 
-        const monthlyTrends = await Transaction.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" },
-                    },
-                    totalIncome: {
-                        $sum: {
-                            $cond: [{ $eq: ["$type", "income"] }, "$amount", 0],
-                        },
-                    },
-                    totalExpense: {
-                        $sum: {
-                            $cond: [
-                                { $eq: ["$type", "expense"] },
-                                "$amount",
-                                0,
-                            ],
-                        },
-                    },
-                },
-            },
-            { $sort: { "_id.year": 1, "_id.month": 1 } },
-        ]);
+      if (!monthlyTrends[key]) {
+        monthlyTrends[key] = { income: 0, expense: 0 };
+      }
 
-        return res.status(200).json({
-            success: true,
-            data: {
-                totalIncome: income,
-                totalExpense: expense,
-                netBalance,
-                categoryTotals,
-                recentTransactions,
-                monthlyTrends,
-            },
-        });
-    } catch (error) {
-        console.error("Dashboard Error:", error.message);
+      if (t.type === "income") {
+        monthlyTrends[key].income += t.amount;
+      } else {
+        monthlyTrends[key].expense += t.amount;
+      }
+    });
 
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
-    }
+    // 🧮 Net Balance
+    const netBalance = totalIncome - totalExpense;
+
+    // 📂 Convert category object → array
+    const categoryArray = Object.keys(categoryTotals).map((key) => ({
+      category: key,
+      total: categoryTotals[key],
+    }));
+
+    // 📅 Convert monthly object → array
+    const monthlyArray = Object.keys(monthlyTrends).map((key) => ({
+      month: key,
+      income: monthlyTrends[key].income,
+      expense: monthlyTrends[key].expense,
+    }));
+
+    // 🕒 Recent transactions
+    const recentTransactions = await Transaction.find()
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalIncome,
+        totalExpense,
+        netBalance,
+        categoryTotals: categoryArray,
+        recentTransactions,
+        monthlyTrends: monthlyArray,
+      },
+    });
+
+  } catch (error) {
+    console.error("Dashboard Error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
