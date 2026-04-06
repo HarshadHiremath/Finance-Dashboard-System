@@ -9,6 +9,11 @@ import {
     FaTachometerAlt 
 } from "react-icons/fa";
 
+import UserManagement from "./Admin-User";
+import FinancialData from "./Admin-Finance";
+import AdminDashboard from "./Admin-Dashboard";
+
+
 export default function Admin() {
     const [active, setActive] = useState("dashboard");
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +29,6 @@ export default function Admin() {
         { id: "dashboard", label: "Dashboard", icon: <FaTachometerAlt  /> },
         { id: "users", label: "User Management", icon: <FaUsers /> },
         { id: "financial", label: "Financial Data", icon: <FaDatabase /> },
-        { id: "summary", label: "Data Summary", icon: <FaChartBar /> },
     ];
 
     /* ---------------- RENDER CONTENT ---------------- */
@@ -32,13 +36,13 @@ export default function Admin() {
         const titleClass = "text-2xl font-bold text-gray-800 mb-4";
         switch (active) {
             case "users":
-                return <div className="animate-fadeIn"><h2 className={titleClass}>User Role Management</h2><p className="text-gray-500">Manage system permissions and user access levels.</p></div>;
+                return <UserManagement/>
             case "financial":
-                return <div className="animate-fadeIn"><h2 className={titleClass}>Financial Data Assets</h2><p className="text-gray-500">Review and audit real-time financial records.</p></div>;
+                return <FinancialData/>;
             case "summary":
-                return <div className="animate-fadeIn"><h2 className={titleClass}>Executive Summary</h2><p className="text-gray-500">High-level overview of fiscal performance.</p></div>;
+                return <AdminDashboard/>;
             default:
-                return <div className="animate-fadeIn"><h2 className={titleClass}>Dashboard Overview</h2><p className="text-gray-500">Welcome back to WealthFlow command center.</p></div>;
+                return <AdminDashboard/>;
         }
     };
 
@@ -124,10 +128,10 @@ export default function Admin() {
                     <div className="flex items-center gap-3">
                         <div className="hidden sm:block text-right">
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Current Admin</p>
-                            <p className="text-sm font-semibold text-gray-700">Harshad Hiremath</p>
+                            <p className="text-sm font-semibold text-gray-700">{localStorage.getItem("user") || "admin@wealthflow.com"}</p>
                         </div>
                         <div className="w-10 h-10 bg-[#D4AF37] rounded-full flex items-center justify-center text-black font-bold border-2 border-white shadow-sm">
-                            H
+                            {(localStorage.getItem("user") || "A")[0].toUpperCase()}
                         </div>
                     </div>
                 </header>
