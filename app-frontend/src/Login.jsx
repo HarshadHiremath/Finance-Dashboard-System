@@ -31,7 +31,7 @@ export default function Login() {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                    }
+                    },
                 );
 
                 const { success, data } = res.data;
@@ -61,7 +61,7 @@ export default function Login() {
 
             const res = await axios.post(
                 `${import.meta.env.VITE_API}/auth/loginUser`,
-                { email, password, role }
+                { email, password, role },
             );
 
             const { success, data, message } = res.data;
@@ -71,14 +71,18 @@ export default function Login() {
                 return;
             }
 
-            const { token, role: userRole, email: userEmail, name:userName } = data;
+            const {
+                token,
+                role: userRole,
+                email: userEmail,
+                name: userName,
+            } = data;
 
             localStorage.setItem("token", token);
             localStorage.setItem("role", userRole);
             localStorage.setItem("email", userEmail);
             localStorage.setItem("user", userName);
             window.location.href = "/";
-
         } catch (err) {
             alert(err.response?.data?.message || "Login failed");
         } finally {
@@ -104,7 +108,6 @@ export default function Login() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f1115] px-4">
             <div className="bg-white p-8 rounded-3xl shadow-[0_20px_50px_rgba(212,175,55,0.1)] w-full max-w-md border-t-4 border-[#D4AF37]">
-
                 <div className="text-center mb-8">
                     <img
                         src={Logo}
@@ -160,8 +163,18 @@ export default function Login() {
                             </select>
 
                             <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
                                 </svg>
                             </div>
                         </div>
@@ -171,9 +184,10 @@ export default function Login() {
                         onClick={handleLogin}
                         disabled={loading}
                         className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition 
-                        ${loading
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#D4AF37] hover:bg-[#B8962E] text-white"
+                        ${
+                            loading
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-[#D4AF37] hover:bg-[#B8962E] text-white"
                         }`}
                     >
                         {loading ? "Processing..." : "Sign In to Dashboard"}
@@ -190,10 +204,41 @@ export default function Login() {
                 </p>
 
                 <div className="flex space-x-6 justify-center">
-                    <a className="text-gray-500 hover:text-[#D4AF37]"><FaGithub size={22} /></a>
-                    <a className="text-gray-500 hover:text-[#D4AF37]"><FaLinkedin size={22} /></a>
-                    <a className="text-gray-500 hover:text-[#D4AF37]"><FaTwitter size={22} /></a>
-                    <a className="text-gray-500 hover:text-[#D4AF37]"><FaGlobe size={22} /></a>
+                    <a
+                        href="https://github.com/HarshadHiremath"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-[#D4AF37]"
+                    >
+                        <FaGithub size={22} />
+                    </a>
+
+                    <a
+                        href="https://linkedin.com/in/HarshadHiremath"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-[#D4AF37]"
+                    >
+                        <FaLinkedin size={22} />
+                    </a>
+
+                    <a
+                        href="https://twitter.com/yourusername"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-[#D4AF37]"
+                    >
+                        <FaTwitter size={22} />
+                    </a>
+
+                    <a
+                        href="https://Harshadhiremath.vercel.app"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-[#D4AF37]"
+                    >
+                        <FaGlobe size={22} />
+                    </a>
                 </div>
             </div>
         </div>
